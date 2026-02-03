@@ -20,8 +20,8 @@ This simulator parses and executes MIPS assembly programs, providing a virtual C
 ### Assembly Programs
 - **test.asm** - Simple test program that prints 42
 - **test2.asm** - Reads an integer from user input and prints it back
-- **test3.asm** - Tests Memory operations
-- **test4.asm** - Tests Arethematic operation (addition)
+- **test3.asm** - Tests memory operations
+- **test4.asm** - Tests arithmetic operation (addition)
 
 ### Build
 - **makefile** - Compiles all source files into `mips_sim` executable
@@ -29,8 +29,15 @@ This simulator parses and executes MIPS assembly programs, providing a virtual C
 ## How to Run
 
 ### Build the Simulator
+
+#### with make
 ```bash
 make
+```
+
+#### Manual Compilation (without make)
+```bash
+gcc -Wall -Wextra -std=c11 -Iinclude src/main.c src/cpu.c src/execute.c src/parser.c -o mips_sim
 ```
 
 ### Run a Program
@@ -39,7 +46,3 @@ make
 ```
 Example: `./mips_sim tests/test2.asm`
 
-### Manual Compilation (without make)
-```bash
-gcc -Wall -Wextra -std=c11 -Iinclude src/main.c src/cpu.c src/execute.c src/parser.c -o mips_sim
-```

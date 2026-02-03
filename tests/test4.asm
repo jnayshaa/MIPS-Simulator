@@ -1,4 +1,4 @@
-# Testing if it can perform arthematic
+# Testing if it can perform arithmetic
 
 addi $t0, $zero, 7 
 addi $t1, $zero, 3
