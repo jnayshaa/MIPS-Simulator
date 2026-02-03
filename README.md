@@ -37,7 +37,7 @@ make
 ```bash
 ./mips_sim <program.asm>
 ```
-Example: `./mips_sim test2.asm`
+Example: `./mips_sim tests/test2.asm`
 
 ### Manual Compilation (without make)
 ```bash
