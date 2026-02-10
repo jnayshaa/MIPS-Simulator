@@ -12,6 +12,8 @@ typedef struct {
     uint8_t memory[MEM_SIZE]; // memory array
 } CPU;
 
+void init_cpu(CPU *cpu); // This function initializes the CPU state
+
 void run(CPU *cpu); // This function runs the CPU simulation, The difference between CPU and cpu is that CPU is the type name while cpu is a variable of that type.
 
 #endif

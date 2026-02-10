@@ -49,6 +49,7 @@ void load_program(const char *filename, Instruction *program, int *program_size)
             *colon = 0;
             strcpy(labels[label_count].name, line);
             labels[label_count].addr = pc;
+            fprintf(stderr, "DEBUG: Found label '%s' at address %d\n", line, pc);
             label_count++;
         } else {
             pc++;
@@ -90,6 +91,12 @@ void load_program(const char *filename, Instruction *program, int *program_size)
             inst->rs = reg_num(strtok(NULL, " ,()"));
             inst->imm = atoi(strtok(NULL, " ,()"));
         }
+        else if (!strcmp(op, "mul")) {
+            inst->type = MUL;
+            inst->rd = reg_num(strtok(NULL, " ,()"));
+            inst->rs = reg_num(strtok(NULL, " ,()"));
+            inst->rt = reg_num(strtok(NULL, " ,()"));
+        }
         else if (!strcmp(op, "lw")) {
             inst->type = LW;
             inst->rt = reg_num(strtok(NULL, " ,()"));
@@ -106,17 +113,29 @@ void load_program(const char *filename, Instruction *program, int *program_size)
             inst->type = BEQ;
             inst->rs = reg_num(strtok(NULL, " ,()"));
             inst->rt = reg_num(strtok(NULL, " ,()"));
-            strcpy(inst->label, strtok(NULL, " ,()"));
+            char *label_token = strtok(NULL, " ,()");
+            if (label_token) strcpy(inst->label, label_token);
         }
         else if (!strcmp(op, "bne")) {
             inst->type = BNE;
             inst->rs = reg_num(strtok(NULL, " ,()"));
             inst->rt = reg_num(strtok(NULL, " ,()"));
-            strcpy(inst->label, strtok(NULL, " ,()"));
+            char *label_token = strtok(NULL, " ,()");
+            if (label_token) strcpy(inst->label, label_token);
         }
         else if (!strcmp(op, "j")) {
             inst->type = J;
-            strcpy(inst->label, strtok(NULL, " ,()"));
+            char *label_token = strtok(NULL, " ,()");
+            if (label_token) strcpy(inst->label, label_token);
+        }
+        else if (!strcmp(op, "jal")) {
+            inst->type = JAL;
+            char *label_token = strtok(NULL, " ,()");
+            if (label_token) strcpy(inst->label, label_token);
+        }
+        else if (!strcmp(op, "jr")) {
+            inst->type = JR;
+            inst->rs = reg_num(strtok(NULL, " ,()"));
         }
         else if (!strcmp(op, "syscall")) {
             inst->type = SYSCALL;
@@ -131,10 +150,12 @@ void load_program(const char *filename, Instruction *program, int *program_size)
     // resolve labels
     for (int i = 0; i < *program_size; i++) {
         Instruction *inst = &program[i];
-        if (inst->type == BEQ || inst->type == BNE || inst->type == J) {
+        if (inst->type == BEQ || inst->type == BNE || inst->type == J || inst->type == JAL) {
+            fprintf(stderr, "DEBUG: Resolving instruction %d, type=%d, label='%s'\n", i, inst->type, inst->label);
             for (int j = 0; j < label_count; j++) {
                 if (!strcmp(inst->label, labels[j].name)) {
                     inst->imm = labels[j].addr;
+                    fprintf(stderr, "DEBUG: Resolved '%s' to address %d\n", inst->label, inst->imm);
                 }
             }
         }

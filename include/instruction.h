@@ -2,10 +2,10 @@
 #define INSTRUCTION_H
 
 typedef enum { // instruction types from assembly language
-    ADD, SUB, ADDI, 
+    ADD, SUB, ADDI, MUL,
     LW, SW,
     BEQ, BNE,
-    J,
+    J, JAL, JR,
     SYSCALL,
     INVALID
 } InstrType;
