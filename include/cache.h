@@ -1,27 +1,30 @@
 #ifndef CACHE_H
 #define CACHE_H
 
-// Direct mapped cache with 64 lines and 4-byte blocks
-#define CACHE_LINES 64
-#define BLOCK_SIZE 4
-
-// To switch to a direct-mapped cache with 32 lines and 8-byte blocks, change to:
-// #define CACHE_LINES 32
-// #define BLOCK_SIZE 8
-
 #include <stdint.h>
+#include <stdio.h>
 
 typedef struct {
     int valid;
     uint32_t tag;
 } CacheLine;
 
-extern CacheLine cache[];
-extern int cache_requests;
-extern int cache_hits;
-extern int mem_ops;
+typedef struct {
+    int lines;           // number of cache lines
+    int block_size;      // words per block
+    CacheLine *lines_array;
+    int cache_requests;
+    int cache_hits;
+    int mem_ops;
+} Cache;
 
-void cache_init(void);
-int cache_access(uint32_t addr);
+// Two direct-mapped cache configurations
+extern Cache cache_64_1word; // 64 lines, 1 word per line
+extern Cache cache_32_2word; // 32 lines, 2 words per line
+
+// Functions
+void cache_init(Cache *cache, int lines, int block_size);
+int cache_access(Cache *cache, uint32_t addr);
+void print_cache_stats(Cache *cache);
 
 #endif

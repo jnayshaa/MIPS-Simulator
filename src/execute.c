@@ -32,13 +32,13 @@ void execute_instruction(CPU *cpu, Instruction *inst) {
             cpu->pc++;
             break;
 
-        case LW: { // includes cache access
+        case LW: {
             int addr = cpu->regs[inst->rs] + inst->imm;
             if (addr < 0 || addr + (int)sizeof(int32_t) > MEM_SIZE) {
                 fprintf(stderr, "ERROR: LW access out of bounds: addr=%d\n", addr);
                 exit(1);
             }
-            cache_access(addr);
+            cache_access(&cache_64_1word, addr); // pass cache pointer
             int32_t val;
             memcpy(&val, &cpu->memory[addr], sizeof(int32_t));
             cpu->regs[inst->rt] = val;
@@ -46,13 +46,13 @@ void execute_instruction(CPU *cpu, Instruction *inst) {
             break;
         }
 
-        case SW: { // includes cache access
+        case SW: {
             int addr = cpu->regs[inst->rs] + inst->imm;
             if (addr < 0 || addr + (int)sizeof(int32_t) > MEM_SIZE) {
                 fprintf(stderr, "ERROR: SW access out of bounds: addr=%d\n", addr);
                 exit(1);
             }
-            cache_access(addr);
+            cache_access(&cache_64_1word, addr); // pass cache pointer
             memcpy(&cpu->memory[addr], &cpu->regs[inst->rt], sizeof(int32_t));
             cpu->pc++;
             break;
