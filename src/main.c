@@ -20,6 +20,7 @@ int main(int argc, char *argv[]) {
     // Initialize the cache you want
     cache_init(&cache_64_1word, 64, 1); // or
     // cache_init(&cache_32_2word, 32, 2);
+    active_cache = &cache_64_1word;
     
     cpu.regs[29] = MEM_SIZE; // initialize $sp at top of memory
     run(&cpu);

@@ -10,6 +10,9 @@ CacheLine cache_lines_32[32];
 Cache cache_64_1word = {64, 1, cache_lines_64, 0, 0, 0};
 Cache cache_32_2word = {32, 2, cache_lines_32, 0, 0, 0};
 
+// Pointer to the currently active cache
+Cache *active_cache = NULL;
+
 // Initialize cache: marks all lines invalid and resets stats
 void cache_init(Cache *cache, int lines, int block_size) {
     cache->lines = lines;

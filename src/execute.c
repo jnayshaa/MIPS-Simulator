@@ -6,6 +6,7 @@
 #include "cache.h"
 
 void execute_instruction(CPU *cpu, Instruction *inst) {
+
     switch (inst->type) {
 
         case ADD:
@@ -34,26 +35,36 @@ void execute_instruction(CPU *cpu, Instruction *inst) {
 
         case LW: {
             int addr = cpu->regs[inst->rs] + inst->imm;
+
             if (addr < 0 || addr + (int)sizeof(int32_t) > MEM_SIZE) {
                 fprintf(stderr, "ERROR: LW access out of bounds: addr=%d\n", addr);
                 exit(1);
             }
-            cache_access(&cache_64_1word, addr); // pass cache pointer
+
+            cache_access(active_cache, addr);
+
             int32_t val;
             memcpy(&val, &cpu->memory[addr], sizeof(int32_t));
             cpu->regs[inst->rt] = val;
+
             cpu->pc++;
             break;
         }
 
         case SW: {
             int addr = cpu->regs[inst->rs] + inst->imm;
+
             if (addr < 0 || addr + (int)sizeof(int32_t) > MEM_SIZE) {
                 fprintf(stderr, "ERROR: SW access out of bounds: addr=%d\n", addr);
                 exit(1);
             }
-            cache_access(&cache_64_1word, addr); // pass cache pointer
-            memcpy(&cpu->memory[addr], &cpu->regs[inst->rt], sizeof(int32_t));
+
+            cache_access(active_cache, addr);
+
+            memcpy(&cpu->memory[addr],
+                   &cpu->regs[inst->rt],
+                   sizeof(int32_t));
+
             cpu->pc++;
             break;
         }
@@ -77,7 +88,7 @@ void execute_instruction(CPU *cpu, Instruction *inst) {
             break;
 
         case JAL:
-            cpu->regs[31] = cpu->pc + 1;  // save return address in $ra
+            cpu->regs[31] = cpu->pc + 1;
             cpu->pc = inst->imm;
             break;
 
@@ -94,6 +105,8 @@ void execute_instruction(CPU *cpu, Instruction *inst) {
                     scanf("%d", &cpu->regs[2]);
                     break;
                 case 10:
+                    printf("\n\n===== Cache Statistics =====\n");
+                    print_cache_stats(active_cache);
                     exit(0);
             }
             cpu->pc++;

@@ -22,6 +22,9 @@ typedef struct {
 extern Cache cache_64_1word; // 64 lines, 1 word per line
 extern Cache cache_32_2word; // 32 lines, 2 words per line
 
+// Pointer to the currently active cache
+extern Cache *active_cache;
+
 // Functions
 void cache_init(Cache *cache, int lines, int block_size);
 int cache_access(Cache *cache, uint32_t addr);

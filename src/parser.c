@@ -15,7 +15,13 @@ static int label_count = 0;
 static int reg_num(const char *r) {
     if (!strcmp(r, "$zero")) return 0;
     if (!strcmp(r, "$v0")) return 2;
+    if (!strcmp(r, "$v1")) return 3;
     if (!strcmp(r, "$a0")) return 4;
+    if (!strcmp(r, "$a1")) return 5;
+    if (!strcmp(r, "$a2")) return 6;
+    if (!strcmp(r, "$a3")) return 7;
+    if (!strcmp(r, "$sp")) return 29;
+    if (!strcmp(r, "$ra")) return 31;
     if (r[1] == 't') return 8 + (r[2] - '0');
     if (r[1] == 's') return 16 + (r[2] - '0');
     return atoi(r + 1);
@@ -49,7 +55,6 @@ void load_program(const char *filename, Instruction *program, int *program_size)
             *colon = 0;
             strcpy(labels[label_count].name, line);
             labels[label_count].addr = pc;
-            fprintf(stderr, "DEBUG: Found label '%s' at address %d\n", line, pc);
             label_count++;
         } else {
             pc++;
@@ -151,11 +156,9 @@ void load_program(const char *filename, Instruction *program, int *program_size)
     for (int i = 0; i < *program_size; i++) {
         Instruction *inst = &program[i];
         if (inst->type == BEQ || inst->type == BNE || inst->type == J || inst->type == JAL) {
-            fprintf(stderr, "DEBUG: Resolving instruction %d, type=%d, label='%s'\n", i, inst->type, inst->label);
             for (int j = 0; j < label_count; j++) {
                 if (!strcmp(inst->label, labels[j].name)) {
                     inst->imm = labels[j].addr;
-                    fprintf(stderr, "DEBUG: Resolved '%s' to address %d\n", inst->label, inst->imm);
                 }
             }
         }
